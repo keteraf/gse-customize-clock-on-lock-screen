@@ -31,6 +31,12 @@ async function execCommunicate(argv, input = null, cancellable = null) {
     if (input !== null)
         flags |= Gio.SubprocessFlags.STDIN_PIPE;
 
+    const commandStr = argv.join(' ');
+    const shellSpecialChars = ['$', '`', '|', '>', '<'];
+    if (shellSpecialChars.some(feature => commandStr.includes(feature))) {
+        argv = ['/bin/sh', '-c', commandStr];
+    }
+
     const proc = new Gio.Subprocess({argv, flags});
     proc.init(cancellable);
 
